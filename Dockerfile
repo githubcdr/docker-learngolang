@@ -1,6 +1,6 @@
 FROM    golang:alpine AS build
 LABEL   maintainer="me@codar.nl"
-ARG     PKGS="git upx binutils"
+ARG     PKGS="git binutils"
 ENV     GOOS=linux \
         GOARCH=amd64 \
         CGO_ENABLED=0
@@ -11,9 +11,6 @@ RUN     set -x && \
         apk add --no-cache --upgrade ${PKGS} && \
         cd /build/ && \
         go build -ldflags="-w -s" -o webserver main.go && \
-        strip --strip-unneeded webserver && \
-        upx -q --best webserver && \
-        upx -t webserver && \
         rm -rf /tmp/* /var/cache/apk/*
 
 # STAGE 2: build the container to run
