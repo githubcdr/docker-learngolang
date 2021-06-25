@@ -9,7 +9,6 @@ WORKDIR /build
 COPY    ./src/ /build
 RUN     set -x && \
         apk add --no-cache --upgrade ${PKGS} && \
-        git clone ${REPO} && \
         cd /build/ && \
         go build -ldflags="-w -s" -o webserver main.go && \
         strip --strip-unneeded webserver && \
