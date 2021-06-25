@@ -1,14 +1,7 @@
 name: 'build tagged images'
 
 on:
-  #push:
-  #  tags:
-  #    - 'v*.*.*'
-  schedule:
-    - cron: '5 4 * * *'
-  release:
-    types: [published]
-
+  push:
 jobs:
   docker:
     runs-on: ubuntu-latest
