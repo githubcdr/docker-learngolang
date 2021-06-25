@@ -10,15 +10,19 @@ COPY    ./src/ /build
 RUN     set -x && \
         apk add --no-cache --upgrade ${PKGS} && \
         cd /build/ && \
-        go build -ldflags="-w -s" -o webserver main.go && \
-        rm -rf /tmp/* /var/cache/apk/*
+        go build -ldflags="-w -s" -o webserver main.go
+
+FROM    cloudtogo4edge/upx:3.96 AS compressor
+COPY    --from=build /build/webserver /webserver
+RUN     set -x && \
+        upx /webserver
 
 # STAGE 2: build the container to run
-FROM gcr.io/distroless/static AS run
-USER nonroot:nonroot
+FROM    gcr.io/distroless/static AS run
+USER    nonroot:nonroot
 
 # copy compiled app
-COPY --from=build --chown=nonroot:nonroot /build/webserver /webserver
+COPY    --from=compressor --chown=nonroot:nonroot /webserver /webserver
 
 # run binary; use vector form
 ENTRYPOINT ["/webserver"]
