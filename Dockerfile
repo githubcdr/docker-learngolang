@@ -2,7 +2,6 @@ FROM    golang:alpine AS build
 LABEL   maintainer="me@codar.nl"
 ARG     PKGS="git binutils"
 ENV     GOOS=linux \
-        GOARCH=amd64 \
         CGO_ENABLED=0
 
 WORKDIR /build
