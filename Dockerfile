@@ -1,26 +1,22 @@
 # builder
-ARG	SOURCE="./src"
-FROM    golang:alpine AS build
-ENV     GOOS=linux \
-        CGO_ENABLED=0 \
-        GO111MODULE=on
-
+FROM    cgr.dev/chainguard/go:latest-dev AS builder
 WORKDIR /build
-COPY    ${SOURCE} /build
-RUN     set -x && \
-        go build -v -ldflags="-w -s" -o main .
+COPY    ./src ./
+RUN     CGO_ENABLED=0 go build -v -ldflags="-w -s" -o main .
 
 # compressor
-FROM    paketobuildpacks/upx AS compressor
-COPY    --from=build /build/main /main
+FROM    alpine:3.21 AS compressor
+RUN     apk add --no-cache upx
+COPY    --from=builder /build/main /main
 RUN     set -x && \
-        upx -9 /main
+  upx -9 /main
 
 # container
-FROM    gcr.io/distroless/static AS run
+FROM    cgr.dev/chainguard/static:latest
 USER    nonroot:nonroot
 COPY    --from=compressor --chown=nonroot:nonroot /main /
 
-EXPOSE	8080
+EXPOSE  8080
 # run binary; use vector form
 ENTRYPOINT ["/main"]
+
