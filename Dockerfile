@@ -11,7 +11,7 @@ RUN     set -x && \
         go build -v -ldflags="-w -s" -o main .
 
 # compressor
-FROM    cloudtogo4edge/upx:3.96 AS compressor
+FROM    paketobuildpacks/upx AS compressor
 COPY    --from=build /build/main /main
 RUN     set -x && \
         upx -9 /main
