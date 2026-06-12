@@ -5,7 +5,7 @@ COPY    ./src ./
 RUN     CGO_ENABLED=0 go build -v -ldflags="-w -s" -o main .
 
 # compressor
-FROM    alpine:3.21 AS compressor
+FROM    alpine:3.24 AS compressor
 RUN     apk add --no-cache upx
 COPY    --from=builder /build/main /main
 RUN     set -x && \
