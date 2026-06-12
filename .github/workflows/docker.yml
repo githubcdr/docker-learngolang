@@ -1,8 +1,33 @@
-jobs:
+name: Release
+
+on:
   release:
-    uses: githubcdr/workflows/.github/workflows/docker-release.yml@main
+    types: [published]
+  schedule:
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Skip pushing images to registries"
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  docker:
+    uses: githubcdr/workflows/.github/workflows/build_container.yaml@main
     with:
-      image_name: learn-golang
+      image_name: myapp
+      image_title: My Application
+      image_description: A short description of the image
+      image_url: https://example.com
+      dry_run: ${{ inputs.dry_run || false }}
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN:    ${{ secrets.DOCKERHUB_TOKEN }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+      security-events: write
