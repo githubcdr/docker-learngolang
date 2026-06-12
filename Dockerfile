@@ -1,10 +1,9 @@
 # builder
-FROM    golang:alpine AS build
-LABEL   maintainer="me@codar.nl"
 ARG	SOURCE="./src"
+FROM    golang:alpine AS build
 ENV     GOOS=linux \
         CGO_ENABLED=0 \
-	GO111MODULE=on
+        GO111MODULE=on
 
 WORKDIR /build
 COPY    ${SOURCE} /build
@@ -25,4 +24,3 @@ COPY    --from=compressor --chown=nonroot:nonroot /main /
 EXPOSE	8080
 # run binary; use vector form
 ENTRYPOINT ["/main"]
-
